@@ -12,6 +12,7 @@ import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import { useMutation } from '@apollo/client';
+// imports add book mutation
 import { ADD_BOOK } from '../utils/mutations';
 
 const SearchBooks = () => {
@@ -28,6 +29,7 @@ const SearchBooks = () => {
   useEffect(() => {
     return () => saveBookIds(savedBookIds);
   });
+  // creates function to save book
   const [saveBook, { error }] = useMutation(ADD_BOOK)
 
   // create method to search for books and set state on form submit
@@ -81,6 +83,8 @@ const SearchBooks = () => {
     const image = bookToSave.image
     const link = bookToSave.link
     const title = bookToSave.title
+    
+    // saves book
     try {
       const data = await saveBook({
         variables: { authors, description, bookId, image, link, title}

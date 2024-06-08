@@ -1,4 +1,5 @@
 import './App.css';
+// imports for apollo server
 import {
   ApolloClient,
   InMemoryCache,
@@ -10,6 +11,7 @@ import { Outlet } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 
+// connect to graphql
 const httpLink = createHttpLink({
   uri: '/graphql',
 });
