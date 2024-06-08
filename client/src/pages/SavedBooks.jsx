@@ -12,18 +12,21 @@ import { QUERY_ME } from '../utils/queries';
 import { REMOVE_BOOK } from '../utils/mutations';
 
 import Auth from '../utils/auth';
-// import { removeBookId } from '../utils/localStorage';
+import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
-  const { loading, data } = useQuery(QUERY_ME)
+  const { loading, data } = useQuery(QUERY_ME);
+  const [deleteBook, { error }] = useMutation(REMOVE_BOOK);
 
-  const user = data?.me || {};
+  const userData = data?.me || {};
 
+  console.log(userData);
+  
   if (loading) {
     return <div>Loading...</div>
   }
 
-  if (!user) {
+  if (!userData) {
     return (
       <h4>
         You need to be logged in to see your profile page. Use the navigation
@@ -41,14 +44,9 @@ const SavedBooks = () => {
     }
 
     try {
-      const response = await deleteBook(bookId, token);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const updatedUser = await response.json();
-      setUserData(updatedUser);
+      const data = await deleteBook({
+        variables: { bookId },
+      });
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {

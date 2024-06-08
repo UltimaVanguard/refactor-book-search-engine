@@ -9,8 +9,10 @@ import {
 } from 'react-bootstrap';
 
 import Auth from '../utils/auth';
-import { saveBook, searchGoogleBooks } from '../utils/API';
+import { searchGoogleBooks } from '../utils/API';
 import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
+import { useMutation } from '@apollo/client';
+import { ADD_BOOK } from '../utils/mutations';
 
 const SearchBooks = () => {
   // create state for holding returned google api data
@@ -26,6 +28,7 @@ const SearchBooks = () => {
   useEffect(() => {
     return () => saveBookIds(savedBookIds);
   });
+  const [saveBook, { error }] = useMutation(ADD_BOOK)
 
   // create method to search for books and set state on form submit
   const handleFormSubmit = async (event) => {
@@ -60,9 +63,9 @@ const SearchBooks = () => {
   };
 
   // create function to handle saving a book to our database
-  const handleSaveBook = async (bookId) => {
+  const handleSaveBook = async (bkId) => {
     // find the book in `searchedBooks` state by the matching id
-    const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
+    const bookToSave = searchedBooks.find((book) => book.bookId === bkId);
 
     // get token
     const token = Auth.loggedIn() ? Auth.getToken() : null;
@@ -71,13 +74,18 @@ const SearchBooks = () => {
       return false;
     }
 
+    console.log(bookToSave)
+    const authors = bookToSave.authors
+    const description = bookToSave.description
+    const bookId = bookToSave.bookId
+    const image = bookToSave.image
+    const link = bookToSave.link
+    const title = bookToSave.title
     try {
-      const response = await saveBook(bookToSave, token);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
+      const data = await saveBook({
+        variables: { authors, description, bookId, image, link, title}
+      });
+      console.log(data);
       // if book successfully saves to user's account, save book id to state
       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
     } catch (err) {
